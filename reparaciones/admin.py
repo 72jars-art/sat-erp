@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import Taller, Cliente, Equipo, ParteReparacion, Pieza, PiezaReparacion, Venta, ProductoVendido, PerfilUsuario, ArqueoCaja
 
+# --- Mixin para filtrar por taller y asignar automáticamente ---
 class TallerAdminMixin:
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -14,7 +15,6 @@ class TallerAdminMixin:
             return qs.none()
 
     def save_model(self, request, obj, form, change):
-        # Asignación forzosa antes de guardar
         if not request.user.is_superuser:
             try:
                 obj.taller = request.user.perfil.taller
@@ -22,19 +22,18 @@ class TallerAdminMixin:
                 pass
         super().save_model(request, obj, form, change)
 
-    # Esto es VITAL: obliga a que los Inlines también hereden el taller del usuario
     def save_formset(self, request, form, formset, change):
-        if not request.user.is_superuser:
-            instances = formset.save(commit=False)
-            for instance in instances:
-                if hasattr(instance, 'taller'):
+        instances = formset.save(commit=False)
+        for instance in instances:
+            if not request.user.is_superuser:
+                try:
                     instance.taller = request.user.perfil.taller
-                instance.save()
-            formset.save_m2m()
-        else:
-            super().save_formset(request, form, formset, change)
+                except (AttributeError, PerfilUsuario.DoesNotExist):
+                    pass
+            instance.save()
+        formset.save_m2m()
 
-# --- Inlines (Añadimos TallerAdminMixin si es necesario o manejamos la lógica) ---
+# --- Inlines ---
 class PerfilInline(admin.StackedInline):
     model = PerfilUsuario
     can_delete = False
@@ -49,6 +48,7 @@ class PiezaReparacionInline(admin.TabularInline):
     model = PiezaReparacion
     extra = 1
     autocomplete_fields = ['pieza']
+    exclude = ('taller',)
 
 class ProductoVendidoInline(admin.TabularInline):
     model = ProductoVendido
@@ -56,11 +56,17 @@ class ProductoVendidoInline(admin.TabularInline):
     autocomplete_fields = ['pieza']
     exclude = ('taller',)
 
-# --- Registros ---
+# --- Registros Administrativos ---
 
 @admin.register(Taller)
 class TallerAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'direccion', 'telefono', 'nif')
+
+@admin.register(ArqueoCaja)
+class ArqueoAdmin(TallerAdminMixin, admin.ModelAdmin):
+    list_display = ('fecha', 'efectivo_apertura', 'total_ventas_efectivo', 'efectivo_cierre_real', 'diferencia')
+    list_filter = ('fecha',)
+    ordering = ('-fecha',)
 
 @admin.register(Pieza)
 class PiezaAdmin(TallerAdminMixin, admin.ModelAdmin):
@@ -70,39 +76,4 @@ class PiezaAdmin(TallerAdminMixin, admin.ModelAdmin):
 
 @admin.register(Equipo)
 class EquipoAdmin(TallerAdminMixin, admin.ModelAdmin):
-    exclude = ('taller',)
-    search_fields = ('marca', 'tipo')
-
-@admin.register(Cliente)
-class ClienteAdmin(TallerAdminMixin, admin.ModelAdmin):
-    exclude = ('taller',)
-    inlines = [EquipoInline]
-    list_display = ('nombre', 'nif', 'telefono')
-
-@admin.register(ParteReparacion)
-class ParteReparacionAdmin(TallerAdminMixin, admin.ModelAdmin):
-    exclude = ('taller',)
-    autocomplete_fields = ['equipo']
-    inlines = [PiezaReparacionInline]
-
-@admin.register(Venta)
-class VentaAdmin(TallerAdminMixin, admin.ModelAdmin):
-    list_display = ('id', 'cliente', 'fecha', 'total_display')
-    fields = ('cliente', 'parte_reparacion', 'importe_entregado', 'total')
-    readonly_fields = ('total',)
-    inlines = [ProductoVendidoInline]
-
-    def total_display(self, obj):
-        return f"{obj.total:.2f}€"
-
-    def save_model(self, request, obj, form, change):
-        super().save_model(request, obj, form, change)
-        obj.calcular_total()
-
-# --- Configuración Usuario ---
-try: admin.site.unregister(User)
-except admin.sites.NotRegistered: pass
-
-@admin.register(User)
-class UserAdmin(BaseUserAdmin):
-    inlines = [PerfilInline]
+    exclude = ('t
