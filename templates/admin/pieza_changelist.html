@@ -1,0 +1,15 @@
+{% extends "admin/change_list.html" %}
+
+{% block object-tools %}
+<div style="background: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+    <div>
+        <h2 style="font-size: 1.2rem; color: #1e293b; margin: 0 0 4px 0;">Control de Inventario</h2>
+        <p style="margin: 0; color: #64748b; font-size: 0.85rem;">Gestión técnica de piezas y repuestos</p>
+    </div>
+    <div style="display: flex; gap: 10px;">
+        <a href="{% url 'stock_critico' %}" class="button" style="background: #ef4444 !important; color: white !important; padding: 10px 20px; border-radius: 6px; font-weight: 600;">Stock Crítico</a>
+        <button onclick="window.print()" class="button" style="background: #64748b !important; color: white !important; padding: 10px 20px; border-radius: 6px; font-weight: 600;">Imprimir Listado</button>
+    </div>
+</div>
+{{ block.super }}
+{% endblock %}

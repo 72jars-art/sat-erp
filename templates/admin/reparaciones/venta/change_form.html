@@ -1,0 +1,32 @@
+{% extends "admin/change_form.html" %}
+
+{% block after_field_sets %}
+    {{ block.super }}
+    
+    <div style="margin-top: 20px; padding: 15px; background: #f9f9f9; border: 1px solid #ddd; text-align: center;">
+        <h3>Opciones de Venta</h3>
+
+        {% if original %}
+            <div style="margin-bottom: 20px; padding: 10px; background: #e8f5e9; border: 1px solid #c8e6c9;">
+                <label style="font-weight: bold; color: #2e7d32;">Importe a Devolver:</label>
+                <span style="font-size: 1.5em; color: #1b5e20;">
+                    {{ original.importe_devolver|floatformat:2 }} €
+                </span>
+            </div>
+
+            <button type="button" 
+        onclick="window.open('/reparaciones/venta/{{ original.id }}/imprimir/', '_blank');" 
+        style="...">
+    Imprimir Ticket
+</button>
+        {% else %}
+            <p>Guarda la venta para poder visualizar el importe a devolver e imprimir el ticket.</p>
+        {% endif %}
+    </div>
+
+    <script>
+        // Opcional: Si deseas que el valor se actualice si cambias el importe_entregado 
+        // sin recargar la página, necesitarías una lógica de JS más compleja conectada al DOM.
+        // Actualmente, el valor se calculará correctamente al guardar el formulario.
+    </script>
+{% endblock %}

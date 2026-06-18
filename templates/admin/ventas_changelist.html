@@ -1,0 +1,14 @@
+{% extends "admin/change_list.html" %}
+
+{% block object-tools %}
+<div style="background: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+    <div>
+        <h2 style="font-size: 1.2rem; color: #1e293b; margin: 0 0 4px 0;">Registro de Ventas</h2>
+        <p style="margin: 0; color: #64748b; font-size: 0.85rem;">Control de caja y facturación diaria</p>
+    </div>
+    <div style="display: flex; gap: 10px;">
+        <a href="{% url 'arqueo_caja' %}" class="button" style="background: #10b981 !important; color: white !important; padding: 10px 20px; border-radius: 6px; font-weight: 600;">Realizar Arqueo</a>
+    </div>
+</div>
+{{ block.super }}
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block branding %}
+<h1 id="site-name">
+    <a href="{% url 'admin:index' %}">
+        ERP Taller Profesional 
+        {% if request.user.is_authenticated and request.user.perfil %}
+            <span style="font-size: 0.7em; color: #94a3b8; margin-left: 10px; padding-left: 10px; border-left: 1px solid #475569;">
+                {{ request.user.perfil.taller.nombre }}
+            </span>
+        {% endif %}
+    </a>
+</h1>
+{% endblock %}
+
+{% block extrastyle %}
+<style>
+    /* Diseño Base Profesional */
+    body { font-family: 'Inter', system-ui, sans-serif !important; background-color: #f8fafc !important; }
+    #header { background-color: #0f172a !important; padding: 12px 24px !important; }
+    #nav-sidebar { background-color: #ffffff !important; border-right: 1px solid #e2e8f0 !important; }
+    .breadcrumbs { display: none !important; }
+    
+    /* Estilo para los nuevos enlaces en el menú */
+    .custom-admin-link { padding: 10px 15px !important; display: block !important; color: #475569 !important; font-weight: 500 !important; text-decoration: none !important; }
+    .custom-admin-link:hover { background: #f1f5f9 !important; color: #0f172a !important; }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // 1. Encontrar el contenedor de la aplicación "Reparaciones"
+        // (Ajusta el selector si el título de tu app en admin es distinto)
+        var repairApp = document.querySelector('div.app-reparaciones');
+        
+        if (repairApp) {
+            var menuList = repairApp.querySelector('table');
+            
+            if (menuList) {
+                // Crear fila para Arqueo
+                var rowArqueo = document.createElement('tr');
+                rowArqueo.innerHTML = '<th scope="row"><a href="{% url "arqueo_caja" %}" class="custom-admin-link">💰 Arqueo de Caja</a></th>';
+                
+                // Crear fila para Stock
+                var rowStock = document.createElement('tr');
+                rowStock.innerHTML = '<th scope="row"><a href="{% url "stock_critico" %}" class="custom-admin-link">⚠️ Stock Crítico</a></th>';
+                
+                // Añadir al final de la tabla de Reparaciones
+                menuList.querySelector('tbody').appendChild(rowArqueo);
+                menuList.querySelector('tbody').appendChild(rowStock);
+            }
+        }
+    });
+</script>
+{% endblock %}

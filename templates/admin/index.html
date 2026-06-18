@@ -1,0 +1,12 @@
+{% extends "admin/index.html" %}
+
+{% block content %}
+{% if request.user.is_authenticated and request.user.perfil %}
+<div style="background: #eef2f5; padding: 20px; border-radius: 8px; border: 1px solid #c8d1d8; margin-bottom: 20px; color: #333;">
+    <h2 style="margin-top: 0;">Bienvenido al Taller: {{ request.user.perfil.taller.nombre }}</h2>
+    <p><strong>Dirección:</strong> {{ request.user.perfil.taller.direccion }}</p>
+</div>
+{% endif %}
+
+{{ block.super }}
+{% endblock %}

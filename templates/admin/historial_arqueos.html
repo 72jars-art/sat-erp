@@ -1,0 +1,23 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<div style="padding: 20px; font-family: sans-serif;">
+    <h2>Historial de Cierres de Caja</h2>
+    <table border="1" width="100%" style="border-collapse: collapse; margin-top: 20px; text-align: left;">
+        <tr style="background: #f1f5f9;">
+            <th style="padding: 10px;">Fecha</th><th>Apertura</th><th>Ventas</th><th>Cierre Real</th><th>Diferencia</th>
+        </tr>
+        {% for a in historial %}
+        <tr style="color: {% if a.diferencia != 0 %}#dc2626{% else %}#166534{% endif %};">
+            <td style="padding: 10px;">{{ a.fecha|date:"d/m/Y" }}</td>
+            <td>{{ a.efectivo_apertura }} €</td>
+            <td>{{ a.total_ventas_efectivo }} €</td>
+            <td>{{ a.efectivo_cierre_real }} €</td>
+            <td><strong>{{ a.diferencia }} €</strong></td>
+        </tr>
+        {% endfor %}
+    </table>
+    <div style="margin-top: 20px;">
+        <a href="/admin/">← Volver al panel</a>
+    </div>
+</div>
+{% endblock %}

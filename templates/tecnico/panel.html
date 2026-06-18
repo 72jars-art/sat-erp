@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel del Técnico</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f4f4f4; }
+        .estado { font-weight: bold; color: #007bff; }
+    </style>
+</head>
+<body>
+    <h1>Reparaciones Pendientes</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Equipo</th>
+                <th>Cliente</th>
+                <th>Estado</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for parte in partes %}
+            <tr>
+                <td>{{ parte.id }}</td>
+                <td>{{ parte.equipo.marca }} - {{ parte.equipo.tipo }}</td>
+                <td>{{ parte.equipo.cliente.nombre }}</td>
+                <td class="estado">{{ parte.get_estado_display }}</td>
+                <td><a href="/admin/reparaciones/partereparacion/{{ parte.id }}/change/">Editar</a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5">No hay reparaciones pendientes.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
